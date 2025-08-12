@@ -219,7 +219,7 @@ export const returnBook = async (req: Request, res: Response): Promise<Response 
  *         name: status
  *         schema:
  *           type: string
- *           enum: [BORROWED, RETURNED]
+ *           enum: [Đang mượn, Đã trả]
  *         description: Lọc theo trạng thái (tùy chọn)
  *       - in: query
  *         name: page

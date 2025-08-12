@@ -7,6 +7,9 @@ import borrowRoutes from './routes/borrow.routes';
 import returnRoutes from './routes/return.routes';
 import { MONGODB_URI } from './config';
 import { setupSwagger } from './config/swagger';
+import { User } from './models/user.model';
+import { Book } from './models/book.model';
+import { BorrowRecord } from './models/borrowRecord.model';
 
 const app = express();
 
@@ -22,12 +25,24 @@ app.use('/api/return', returnRoutes);
 setupSwagger(app);
 
 // MongoDB connection
-mongoose.connect(MONGODB_URI)
-.then(() => {
+mongoose
+  .connect(MONGODB_URI)
+  .then(async () => {
     console.log('MongoDB connected');
-})
-.catch((error) => {
+    // Ensure DB indexes match current schemas (drops stale indexes like email_1)
+    try {
+      await Promise.all([
+        User.syncIndexes(),
+        Book.syncIndexes(),
+        BorrowRecord.syncIndexes(),
+      ]);
+      console.log('Indexes synchronized with schemas');
+    } catch (indexErr) {
+      console.error('Index synchronization error:', indexErr);
+    }
+  })
+  .catch((error) => {
     console.error('MongoDB connection error:', error);
-});
+  });
 
 export default app;
