@@ -8,30 +8,44 @@ function generateOTP(): string {
 
 export const register = async (req: Request, res: Response): Promise<void> => {
     try {
-    const { email, password } = req.body as { email: string; password: string };
+        const { username, password, fullname } = req.body as { 
+            username: string; 
+            password: string; 
+            fullname: string; 
+        };
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-        res.status(400).json({ message: 'User already exists' });
-        return;
-    }
+        if (!username || !password || !fullname) {
+            res.status(400).json({ message: 'Username, password, and fullname are required' });
+            return;
+        }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            res.status(400).json({ message: 'Username already exists' });
+            return;
+        }
 
-    let role: 'admin' | 'user' = 'user';
-    if (email === 'admin@example.com') {
-        role = 'admin';
-    }
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
-    const user = new User({ email, password: hashedPassword, role });
-    await user.save();
+        let role: 'admin' | 'user' = 'user';
+        if (username === 'admin') {
+            role = 'admin';
+        }
 
-    res.status(201).json({ message: 'User registered successfully.' });
+        const user = new User({ username, password: hashedPassword, fullname, role });
+        await user.save();
+
+        res.status(201).json({ 
+            message: 'User registered successfully',
+            user: {
+                id: user._id,
+                username: user.username,
+                fullname: user.fullname,
+                role: user.role
+            }
+        });
     } catch (error) {
-    console.error('Error registering user:', error);
-    res.status(500).json({ message: 'Internal server error' });
+        console.error('Error registering user:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 }

@@ -7,9 +7,9 @@ const options = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'Authentication API',
+            title: 'Library Management API',
             version: '1.0.0',
-            description: 'API documentation for the Authentication Service',
+            description: 'API documentation for the Library Management System with user authentication, book management, and borrowing functionality',
             contact: {
                 name: 'API Support',
                 url: 'http://localhost:3000',
@@ -44,8 +44,6 @@ const options = {
 
 const swaggerSpec = swaggerJSDoc(options);
 
-const role = 'user';
-
 export default swaggerSpec;
 
 export const setupSwagger = (app: Express): void => {
@@ -55,7 +53,7 @@ export const setupSwagger = (app: Express): void => {
         swaggerUi.setup(swaggerSpec, {
             explorer: true,
             customCss: '.swagger-ui .topbar { display: none }',
-            customSiteTitle: 'Authentication API',
+            customSiteTitle: 'Library Management API',
         })
     );
 };

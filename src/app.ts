@@ -2,25 +2,27 @@ import express from 'express';
 import mongoose from 'mongoose';
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
-import dotenv from 'dotenv';
+import bookRoutes from './routes/book.routes';
+import borrowRoutes from './routes/borrow.routes';
+import returnRoutes from './routes/return.routes';
+import { MONGODB_URI } from './config';
 import { setupSwagger } from './config/swagger';
-
-dotenv.config();
 
 const app = express();
 
-// Middleware
 app.use(express.json());
 
-// Routes
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/books', bookRoutes);
+app.use('/api/borrow', borrowRoutes);
+app.use('/api/return', returnRoutes);
 
-// Setup Swagger documentation
 setupSwagger(app);
 
 // MongoDB connection
-mongoose.connect(process.env.MONGODB_URI as string)
+mongoose.connect(MONGODB_URI)
 .then(() => {
     console.log('MongoDB connected');
 })
